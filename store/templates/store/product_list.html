@@ -1,0 +1,25 @@
+{% extends 'store/base.html' %}
+
+{% block title %}Danh sách sản phẩm - E-Shop{% endblock %}
+
+{% block content %}
+    <h2>Danh sách sản phẩm</h2>
+
+    {% if products %}
+        <div class="product-list">
+            {% for product in products %}
+                <div class="product-card">
+                    {% if product.image %}
+                        <img src="{{ product.image.url }}" alt="{{ product.name }}">
+                    {% endif %}
+                    <h3>
+                        <a href="{{ product.slug }}/">{{ product.name }}</a>
+                    </h3>
+                    <p class="price">${{ product.price }}</p>
+                </div>
+            {% endfor %}
+        </div>
+    {% else %}
+        <p>Chưa có sản phẩm nào.</p>
+    {% endif %}
+{% endblock %}

@@ -1,0 +1,30 @@
+{% extends 'store/base.html' %}
+
+{% block title %}{{ product.name }} - E-Shop{% endblock %}
+
+{% block content %}
+    <a href="/">&larr; Quay lại danh sách sản phẩm</a>
+
+    <h2>{{ product.name }}</h2>
+
+    {% if product.image %}
+        <img src="{{ product.image.url }}" alt="{{ product.name }}" style="max-width: 350px; display:block; margin-bottom: 15px;">
+    {% endif %}
+
+    <p class="price">${{ product.price }}</p>
+    <p>{{ product.description }}</p>
+
+    <form action="{% url 'cart_add' product.id %}" method="post" style="margin-top:15px;">
+        {% csrf_token %}
+        <label>
+            Số lượng:
+            <input type="number" name="quantity" value="1" min="1" style="width:60px;">
+        </label>
+        <button type="submit">Thêm vào giỏ</button>
+    </form>
+
+
+    <p style="margin-top:10px;">
+        <a href="{% url 'cart_detail' %}">Xem giỏ hàng</a>
+    </p>
+{% endblock %}

@@ -1,0 +1,65 @@
+{% extends 'store/base.html' %}
+
+{% block title %}Giỏ hàng - E-Shop{% endblock %}
+
+{% block content %}
+    <h2>Giỏ hàng</h2>
+
+    {% if cart|length == 0 %}
+        <p>Giỏ hàng của bạn đang trống.</p>
+        <p><a href="/">← Tiếp tục mua sắm</a></p>
+    {% else %}
+        <table style="width: 100%; border-collapse: collapse;">
+            <thead>
+                <tr>
+                    <th style="text-align:left; border-bottom:1px solid #ddd; padding:8px;">Sản phẩm</th>
+                    <th style="text-align:right; border-bottom:1px solid #ddd; padding:8px;">Giá</th>
+                    <th style="text-align:right; border-bottom:1px solid #ddd; padding:8px;">Số lượng</th>
+                    <th style="text-align:right; border-bottom:1px solid #ddd; padding:8px;">Thành tiền</th>
+                    <th></th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for item in cart %}
+                    <tr>
+                        <td style="padding:8px;">
+                            {{ item.product.name }}
+                        </td>
+                        <td style="padding:8px; text-align:right;">
+                            ${{ item.price }}
+                        </td>
+                        <td style="padding:8px; text-align:right;">
+                            <form action="{% url 'cart_update' item.product.id %}" method="post" style="display:inline;">
+                                {% csrf_token %}
+                                <input type="number" name="quantity" value="{{ item.quantity }}" min="0" style="width:60px; text-align:right;">
+                                <button type="submit">Cập nhật</button>
+                            </form>
+                        </td>
+                        <td style="padding:8px; text-align:right;">
+                            ${{ item.total_price }}
+                        </td>
+                        <td style="padding:8px; text-align:right;">
+                            <a href="{% url 'cart_remove' item.product.id %}">Xóa</a>
+                        </td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+
+            <tfoot>
+                <tr>
+                    <td colspan="3" style="padding:8px; text-align:right; font-weight:bold;">
+                        Tổng cộng:
+                    </td>
+                    <td style="padding:8px; text-align:right; font-weight:bold;">
+                        ${{ cart.get_total_price }}
+                    </td>
+                    <td></td>
+                </tr>
+            </tfoot>
+        </table>
+
+        <p style="margin-top:20px;">
+            <a href="/">← Tiếp tục mua sắm</a>
+        </p>
+    {% endif %}
+{% endblock %}
