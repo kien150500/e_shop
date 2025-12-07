@@ -10,30 +10,38 @@
 </head>
 <body>
     <header>
-    <div style="display:flex; justify-content:space-between; align-items:center;">
-        <div>
-            <h1>E-Shop</h1>
-            <p>Shopping Website</p>
-        </div>
-        <div>
-            {% if user.is_authenticated %}
-                Xin chào, {{ user.username }} |
-                <a href="{% url 'logout' %}" style="color:white;">Đăng xuất</a> |
-            {% else %}
-                <a href="{% url 'login' %}" style="color:white;">Đăng nhập</a> |
-                <a href="{% url 'register' %}" style="color:white;">Đăng ký</a> |
-            {% endif %}
-            <a href="{% url 'cart_detail' %}" style="color:white; text-decoration:none;">
-                🛒 Cart
-                {% if cart_item_count > 0 %}
-                    ({{ cart_item_count }})
+        <div style="display:flex; justify-content:space-between; align-items:center;">
+            <div>
+                <h1>E-Shop</h1>
+                <p>Shopping Website</p>
+            </div>
+            <div>
+                {% if user.is_authenticated %}
+                    Xin chào, {{ user.username }} |
+                    <a href="{% url 'logout' %}" style="color:white;">Đăng xuất</a> |
                 {% else %}
-                    (Empty)
+                    <a href="{% url 'login' %}" style="color:white;">Đăng nhập</a> |
+                    <a href="{% url 'register' %}" style="color:white;">Đăng ký</a> |
                 {% endif %}
-            </a>
+                <a href="{% url 'cart_detail' %}" style="color:white; text-decoration:none;">
+                    🛒 Cart
+                    {% if cart_item_count > 0 %}
+                        ({{ cart_item_count }})
+                    {% else %}
+                        (Empty)
+                    {% endif %}
+                </a>
+            </div>
         </div>
-    </div>
-</header>
+    </header>
+
+    <nav style="background:#1e293b; padding:10px;">
+        <form action="{% url 'product_list' %}" method="get">
+            <input type="text" name="q" placeholder="Tìm kiếm..." style="padding:5px;">
+            <button type="submit">Tìm</button>
+        </form>
+    </nav>
+
 
 
 

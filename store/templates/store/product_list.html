@@ -1,25 +1,67 @@
 {% extends 'store/base.html' %}
 
-{% block title %}Danh sách sản phẩm - E-Shop{% endblock %}
+{% block title %}Sản phẩm - E-Shop{% endblock %}
 
 {% block content %}
-    <h2>Danh sách sản phẩm</h2>
 
-    {% if products %}
-        <div class="product-list">
-            {% for product in products %}
-                <div class="product-card">
-                    {% if product.image %}
-                        <img src="{{ product.image.url }}" alt="{{ product.name }}">
-                    {% endif %}
-                    <h3>
-                        <a href="{{ product.slug }}/">{{ product.name }}</a>
-                    </h3>
-                    <p class="price">${{ product.price }}</p>
-                </div>
+<div style="display:flex; gap:20px;">
+
+    <!-- Sidebar category -->
+    <div style="width:200px;">
+        <h3>Danh mục</h3>
+        <ul>
+            <li><a href="{% url 'product_list' %}">Tất cả</a></li>
+            {% for c in categories %}
+                <li>
+                    <a href="{% url 'product_list_by_category' c.slug %}">
+                        {{ c.name }}
+                    </a>
+                </li>
             {% endfor %}
-        </div>
-    {% else %}
-        <p>Chưa có sản phẩm nào.</p>
-    {% endif %}
+        </ul>
+    </div>
+
+    <div style="flex:1;">
+
+        <!-- Search -->
+        <form method="get">
+            <input type="text" name="q" placeholder="Tìm sản phẩm..."
+                   value="{{ query|default:'' }}">
+            <button type="submit">Tìm</button>
+        </form>
+
+        <h2>Sản phẩm</h2>
+
+        {% if products %}
+            <div class="product-list">
+                {% for product in products %}
+                    <div class="product-card">
+                        {% if product.image %}
+                            <img src="{{ product.image.url }}" alt="{{ product.name }}">
+                        {% endif %}
+                        <h3><a href="{% url 'product_detail' product.slug %}">{{ product.name }}</a></h3>
+                        <p class="price">${{ product.price }}</p>
+                    </div>
+                {% endfor %}
+            </div>
+
+            <!-- Pagination -->
+            <div style="margin-top:20px;">
+                {% if products.has_previous %}
+                    <a href="?page={{ products.previous_page_number }}{% if query %}&q={{ query }}{% endif %}">Previous</a>
+                {% endif %}
+
+                <span>Trang {{ products.number }} / {{ products.paginator.num_pages }}</span>
+
+                {% if products.has_next %}
+                    <a href="?page={{ products.next_page_number }}{% if query %}&q={{ query }}{% endif %}">Next</a>
+                {% endif %}
+            </div>
+        {% else %}
+            <p>Không có sản phẩm nào.</p>
+        {% endif %}
+    </div>
+
+</div>
+
 {% endblock %}

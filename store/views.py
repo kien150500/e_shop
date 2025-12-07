@@ -4,17 +4,38 @@ from .cart import Cart
 from django.contrib.auth.forms import UserCreationForm, AuthenticationForm
 from django.contrib.auth import login, logout
 from django.contrib.auth.decorators import login_required
+from django.core.paginator import Paginator
 
 from .forms import CheckoutForm
 from .models import Product, Category, Order, OrderItem
 
-def product_list(request):
-    products = Product.objects.filter(available=True)
+def product_list(request, category_slug=None):
+    category = None
     categories = Category.objects.all()
+    products = Product.objects.filter(available=True)
+
+    # if slug category is available → filter category
+    if category_slug:
+        category = Category.objects.get(slug=category_slug)
+        products = products.filter(category=category)
+
+    # Search
+    query = request.GET.get('q')
+    if query:
+        products = products.filter(name__icontains=query)
+
+    # Pagination
+    paginator = Paginator(products, 8)  # 8 products / page
+    page = request.GET.get('page')
+    products = paginator.get_page(page)
+
     return render(request, 'store/product_list.html', {
-        'products': products,
+        'category': category,
         'categories': categories,
+        'products': products,
+        'query': query,
     })
+    
 
 
 def product_detail(request, slug):
