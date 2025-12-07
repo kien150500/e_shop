@@ -1,6 +1,12 @@
 from django.shortcuts import render, get_object_or_404, redirect
 from .models import Product, Category
 from .cart import Cart
+from django.contrib.auth.forms import UserCreationForm, AuthenticationForm
+from django.contrib.auth import login, logout
+from django.contrib.auth.decorators import login_required
+
+from .forms import CheckoutForm
+from .models import Product, Category, Order, OrderItem
 
 def product_list(request):
     products = Product.objects.filter(available=True)
@@ -60,4 +66,71 @@ def cart_detail(request):
     cart = Cart(request)
     return render(request, 'store/cart_detail.html', {'cart': cart})
 
+
+def register_view(request):
+    if request.method == 'POST':
+        form = UserCreationForm(request.POST)
+        if form.is_valid():
+            user = form.save()
+            login(request, user)
+            return redirect('product_list')
+    else:
+        form = UserCreationForm()
+    return render(request, 'store/register.html', {'form': form})
+
+
+def login_view(request):
+    if request.method == 'POST':
+        form = AuthenticationForm(request, data=request.POST)
+        if form.is_valid():
+            user = form.get_user()
+            login(request, user)
+            return redirect('product_list')
+    else:
+        form = AuthenticationForm(request)
+    return render(request, 'store/login.html', {'form': form})
+
+
+def logout_view(request):
+    logout(request)
+    return redirect('product_list')
+
+
+@login_required
+def checkout(request):
+    cart = Cart(request)
+
+    if len(cart) == 0:
+        return redirect('product_list')
+
+    if request.method == 'POST':
+        form = CheckoutForm(request.POST)
+        if form.is_valid():
+            order = form.save(commit=False)
+            order.user = request.user
+            order.save()
+
+            for item in cart:
+                OrderItem.objects.create(
+                    order=order,
+                    product=item['product'],
+                    price=item['price'],
+                    quantity=item['quantity']
+                )
+
+            cart.clear()
+            return render(request, 'store/order_success.html', {'order': order})
+    else:
+        initial = {}
+        if request.user.is_authenticated:
+            initial = {
+                'full_name': request.user.get_full_name() or request.user.username,
+                'email': request.user.email,
+            }
+        form = CheckoutForm(initial=initial)
+
+    return render(request, 'store/checkout.html', {
+        'cart': cart,
+        'form': form,
+    })
 

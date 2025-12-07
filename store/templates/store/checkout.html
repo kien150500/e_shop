@@ -1,0 +1,26 @@
+{% extends 'store/base.html' %}
+
+{% block title %}Thanh toán - E-Shop{% endblock %}
+
+{% block content %}
+<h2>Thanh toán</h2>
+
+<h3>Đơn hàng của bạn</h3>
+<ul>
+    {% for item in cart %}
+        <li>
+            {{ item.product.name }} x {{ item.quantity }} — ${{ item.total_price }}
+        </li>
+    {% endfor %}
+</ul>
+<p><strong>Tổng cộng: ${{ cart.get_total_price }}</strong></p>
+
+<hr>
+
+<h3>Thông tin nhận hàng</h3>
+<form method="post">
+    {% csrf_token %}
+    {{ form.as_p }}
+    <button type="submit">Đặt hàng</button>
+</form>
+{% endblock %}

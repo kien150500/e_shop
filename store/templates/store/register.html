@@ -1,0 +1,15 @@
+{% extends 'store/base.html' %}
+
+{% block title %}Đăng ký - E-Shop{% endblock %}
+
+{% block content %}
+<h2>Register</h2>
+
+<form method="post">
+    {% csrf_token %}
+    {{ form.as_p }}
+    <button type="submit">Create account</button>
+</form>
+
+<p>Already having acount? <a href="{% url 'login' %}">Login</a></p>
+{% endblock %}

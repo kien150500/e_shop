@@ -1,0 +1,10 @@
+{% extends 'store/base.html' %}
+
+{% block title %}Đặt hàng thành công - E-Shop{% endblock %}
+
+{% block content %}
+<h2>Cảm ơn bạn đã đặt hàng!</h2>
+<p>Mã đơn hàng của bạn là: <strong>#{{ order.id }}</strong></p>
+
+<p><a href="/">← Tiếp tục mua sắm</a></p>
+{% endblock %}
