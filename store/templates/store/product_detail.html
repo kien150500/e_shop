@@ -14,6 +14,36 @@
     <p class="price">${{ product.price }}</p>
     <p>{{ product.description }}</p>
 
+    <h3>Related Products</h3>
+    <div class="product-list">
+        {% for p in related_products %}
+            <div class="product-card">
+                {% if p.image %}
+                    <img src="{{ p.image.url }}" alt="{{ p.name }}">
+                {% endif %}
+                <h4><a href="{% url 'product_detail' p.slug %}">{{ p.name }}</a></h4>
+                <p class="price">${{ p.price }}</p>
+            </div>
+        {% empty %}
+            <p>Không có sản phẩm liên quan.</p>
+        {% endfor %}
+    </div>
+
+    <h3>You can like</h3>
+    <div class="product-list">
+        {% for p in suggested %}
+            <div class="product-card">
+                {% if p.image %}
+                    <img src="{{ p.image.url }}" alt="{{ p.name }}">
+                {% endif %}
+                <h4><a href="{% url 'product_detail' p.slug %}">{{ p.name }}</a></h4>
+                <p class="price">${{ p.price }}</p>
+            </div>
+        {% empty %}
+            <p>Chưa có gợi ý.</p>
+        {% endfor %}
+    </div>
+
     <form action="{% url 'cart_add' product.id %}" method="post" style="margin-top:15px;">
         {% csrf_token %}
         <label>

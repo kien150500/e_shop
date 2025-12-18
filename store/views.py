@@ -40,8 +40,23 @@ def product_list(request, category_slug=None):
 
 def product_detail(request, slug):
     product = get_object_or_404(Product, slug=slug, available=True)
+    
+    # Other products in the same category
+    related_products = Product.objects.filter(
+        category=product.category,
+        available=True
+    ).exclude(id=product.id)[:4]   # maximum 4 products
+
+    # Suggest unique random products
+    from random import sample
+    all_products = list(Product.objects.filter(available=True).exclude(id=product.id))
+
+    suggested = sample(all_products, min(len(all_products), 4))
+
     return render(request, 'store/product_detail.html', {
         'product': product,
+        'related_products': related_products,
+        'suggested': suggested,
     })
 
 def cart_add(request, product_id):
