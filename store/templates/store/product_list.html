@@ -21,8 +21,32 @@
         </ul>
     </div>
 
-    <div style="flex:1;">
+    <form method="get" style="margin-bottom:20px; display:flex; gap:10px; align-items:end;">
+        <div>
+            <label>Giá từ</label><br>
+            <input type="number" name="min_price" value="{{ min_price }}">
+        </div>
 
+        <div>
+            <label>Đến</label><br>
+            <input type="number" name="max_price" value="{{ max_price }}">
+        </div>
+
+        <div>
+            <label>Sắp xếp</label><br>
+            <select name="sort">
+                <option value="">Mặc định</option>
+                <option value="price_asc" {% if sort == 'price_asc' %}selected{% endif %}>Giá tăng dần</option>
+                <option value="price_desc" {% if sort == 'price_desc' %}selected{% endif %}>Giá giảm dần</option>
+                <option value="newest" {% if sort == 'newest' %}selected{% endif %}>Mới nhất</option>
+            </select>
+        </div>
+
+        <button type="submit">Lọc</button>
+    </form>
+
+
+    <div style="flex:1;">
         <!-- Search -->
         <form method="get">
             <input type="text" name="q" placeholder="Tìm sản phẩm..."
@@ -48,15 +72,26 @@
             <!-- Pagination -->
             <div style="margin-top:20px;">
                 {% if products.has_previous %}
-                    <a href="?page={{ products.previous_page_number }}{% if query %}&q={{ query }}{% endif %}">Previous</a>
+                    <a href="?page={{ products.previous_page_number }}
+                    {% if query %}&q={{ query }}{% endif %}
+                    {% if min_price %}&min_price={{ min_price }}{% endif %}
+                    {% if max_price %}&max_price={{ max_price }}{% endif %}
+                    {% if sort %}&sort={{ sort }}{% endif %}
+                    ">Previous</a>
                 {% endif %}
 
                 <span>Trang {{ products.number }} / {{ products.paginator.num_pages }}</span>
 
                 {% if products.has_next %}
-                    <a href="?page={{ products.next_page_number }}{% if query %}&q={{ query }}{% endif %}">Next</a>
+                    <a href="?page={{ products.next_page_number }}
+                    {% if query %}&q={{ query }}{% endif %}
+                    {% if min_price %}&min_price={{ min_price }}{% endif %}
+                    {% if max_price %}&max_price={{ max_price }}{% endif %}
+                    {% if sort %}&sort={{ sort }}{% endif %}
+                    ">Next</a>
                 {% endif %}
             </div>
+
         {% else %}
             <p>Không có sản phẩm nào.</p>
         {% endif %}

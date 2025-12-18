@@ -14,6 +14,20 @@
     <p class="price">${{ product.price }}</p>
     <p>{{ product.description }}</p>
 
+    <form action="{% url 'cart_add' product.id %}" method="post" style="margin-top:15px;">
+        {% csrf_token %}
+        <label>
+            Số lượng:
+            <input type="number" name="quantity" value="1" min="1" style="width:60px;">
+        </label>
+        <button type="submit">Thêm vào giỏ</button>
+    </form>
+
+
+    <p style="margin-top:10px;">
+        <a href="{% url 'cart_detail' %}">Xem giỏ hàng</a>
+    </p>
+
     <h3>Related Products</h3>
     <div class="product-list">
         {% for p in related_products %}
@@ -44,17 +58,5 @@
         {% endfor %}
     </div>
 
-    <form action="{% url 'cart_add' product.id %}" method="post" style="margin-top:15px;">
-        {% csrf_token %}
-        <label>
-            Số lượng:
-            <input type="number" name="quantity" value="1" min="1" style="width:60px;">
-        </label>
-        <button type="submit">Thêm vào giỏ</button>
-    </form>
-
-
-    <p style="margin-top:10px;">
-        <a href="{% url 'cart_detail' %}">Xem giỏ hàng</a>
-    </p>
+    
 {% endblock %}

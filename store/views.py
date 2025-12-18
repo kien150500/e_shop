@@ -5,16 +5,16 @@ from django.contrib.auth.forms import UserCreationForm, AuthenticationForm
 from django.contrib.auth import login, logout
 from django.contrib.auth.decorators import login_required
 from django.core.paginator import Paginator
-
 from .forms import CheckoutForm
 from .models import Product, Category, Order, OrderItem
+from django.db.models import Q
 
 def product_list(request, category_slug=None):
     category = None
     categories = Category.objects.all()
     products = Product.objects.filter(available=True)
 
-    # if slug category is available → filter category
+    # Filter by category
     if category_slug:
         category = Category.objects.get(slug=category_slug)
         products = products.filter(category=category)
@@ -22,10 +22,33 @@ def product_list(request, category_slug=None):
     # Search
     query = request.GET.get('q')
     if query:
-        products = products.filter(name__icontains=query)
+        products = products.filter(
+            Q(name__icontains=query) |
+            Q(description__icontains=query)
+        )
+
+    # Filter theo giá
+    min_price = request.GET.get('min_price')
+    max_price = request.GET.get('max_price')
+
+    if min_price:
+        products = products.filter(price__gte=min_price)
+    if max_price:
+        products = products.filter(price__lte=max_price)
+
+    # Sort
+    sort = request.GET.get('sort')
+    if sort == 'price_asc':
+        products = products.order_by('price')
+    elif sort == 'price_desc':
+        products = products.order_by('-price')
+    elif sort == 'newest':
+        products = products.order_by('-created')
+    else:
+        products = products.order_by('-created')
 
     # Pagination
-    paginator = Paginator(products, 8)  # 8 products / page
+    paginator = Paginator(products, 8)
     page = request.GET.get('page')
     products = paginator.get_page(page)
 
@@ -34,6 +57,9 @@ def product_list(request, category_slug=None):
         'categories': categories,
         'products': products,
         'query': query,
+        'min_price': min_price,
+        'max_price': max_price,
+        'sort': sort,
     })
     
 
